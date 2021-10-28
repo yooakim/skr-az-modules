@@ -167,11 +167,22 @@ resource appService 'Microsoft.Web/sites@2021-02-01' = {
         }
       ]
       linuxFxVersion: 'DOCKER|wordpress:latest'
+      azureStorageAccounts:{
+        wordpress:{
+          type: 'AzureFiles'
+          accountName: storageAccount.name
+          shareName: stBlobervice_wordpress.name
+          mountPath: '/var/www/html'
+          accessKey: listKeys(storageAccount.id, storageAccount.apiVersion).primaryConnectionString
+        }
+      }
     }
   }
   
   dependsOn:[
     appServicePlan
+    storageAccount
+    stBlobervice_wordpress
   ]
 }
 
