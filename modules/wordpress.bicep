@@ -173,7 +173,7 @@ resource appService 'Microsoft.Web/sites@2021-02-01' = {
           accountName: storageAccount.name
           shareName: stBlobervice_wordpress.name
           mountPath: '/var/www/html'
-          accessKey: listKeys(storageAccount.id, storageAccount.apiVersion).primaryConnectionString
+          accessKey: listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
         }
       }
     }
