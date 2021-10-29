@@ -70,14 +70,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' = {
   properties: {
     addressSpace: {
       addressPrefixes: [
-        '10.0.0.0/24'
+        '192.168.0.0/16'
       ]
     }
     subnets: [
       {
         name: 'default'
         properties: {
-          addressPrefix: '10.0.0.0/24'
+          addressPrefix: '192.168.0.0/24'
           delegations: []
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
@@ -197,8 +197,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-03-01' = {
   parent: virtualNetwork
   name: 'default'
   properties: {
-    addressPrefix: '10.0.0.0/24'
-    delegations: []
+    addressPrefix: '192.168.0.0/24'
     privateEndpointNetworkPolicies: 'Enabled'
     privateLinkServiceNetworkPolicies: 'Enabled'
   }
