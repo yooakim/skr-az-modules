@@ -105,16 +105,10 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-07-01' = {
       }
       osDisk: {
         osType: 'Linux'
-        name: '${siteName}_disk1_abac01b2264c4a8fae71e51b7cac3245'
         createOption: 'FromImage'
         caching: 'ReadWrite'
-        managedDisk: {
-          storageAccountType: 'Premium_LRS'
-          id: resourceId('Microsoft.Compute/disks', '${siteName}_disk1_abac01b2264c4a8fae71e51b7cac3245')
-        }
         diskSizeGB: 30
       }
-      dataDisks: []
     }
     osProfile: {
       computerName: siteName
