@@ -124,14 +124,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-07-01' = {
           ]
         }
         provisionVMAgent: true
-        patchSettings: {
-          patchMode: 'ImageDefault'
-          assessmentMode: 'ImageDefault'
-        }
       }
-      secrets: []
-      allowExtensionOperations: true
-      requireGuestProvisionSignal: true
     }
     networkProfile: {
       networkInterfaces: [
