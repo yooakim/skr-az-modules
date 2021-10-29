@@ -120,70 +120,87 @@ resource stfileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: '${siteName}-asp'
-  location: location
-  tags: tags
-  kind: 'linux'
-  sku: {
-    name: 'P1v2'
-    tier: 'PremiumV2'
-    size: 'P1v2'
-    family: 'Pv2'
-    capacity: 1
-  }
-  properties:{
-    reserved: true
-  }
-}
 
-resource appService 'Microsoft.Web/sites@2021-02-01' = {
-  name: siteName
+resource aci 'Microsoft.ContainerInstance/containerGroups@2021-07-01' = {
+  name: '${siteName}-aci'
   location: location
-  tags: tags
-  properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      appSettings:[
-        {
-          name: 'WORDPRESS_DB_HOST'
-          value: '${mySqlServerName}.mysql.database.azure.com'
-        }
-        {
-          name: 'WORDPRESS_DB_NAME'
-          value: siteName
-        }
-        {
-          name: 'WORDPRESS_DB_PASSWORD'
-          value: administratorLoginPassword
-        }
-        {
-          name: 'WORDPRESS_DB_USER'
-          value: '${administratorLogin}@${mySqlServerName}'
-        }
-        {
-          name: 'WORDPRESS_CONFIG_EXTRA'
-          value: 'define( \'MYSQL_CLIENT_FLAGS\', MYSQLI_CLIENT_SSL );'
-        }
-      ]
-      linuxFxVersion: 'DOCKER|wordpress:latest'
-      azureStorageAccounts:{
-        wordpress:{
-          type: 'AzureFiles'
-          accountName: storageAccount.name
-          shareName: stBlobervice_wordpress.name
-          mountPath: '/var/www/html'
-          accessKey: listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
+  properties:{
+    containers:[
+      {
+        name: '${siteName}-con1'
+        properties:{
+          image: 'docker.io/library/wordpress:latest'
+          environmentVariables:[
+            {
+              name: 'WORDPRESS_DB_HOST'
+              value: '${mySqlServerName}.mysql.database.azure.com'
+            }
+            {
+              name: 'WORDPRESS_DB_NAME'
+              value: siteName
+            }
+            {
+              name: 'WORDPRESS_DB_PASSWORD'
+              value: administratorLoginPassword
+            }
+            {
+              name: 'WORDPRESS_DB_USER'
+              value: '${administratorLogin}@${mySqlServerName}'
+            }
+            {
+              name: 'WORDPRESS_CONFIG_EXTRA'
+              value: 'define( \'MYSQL_CLIENT_FLAGS\', MYSQLI_CLIENT_SSL );'
+            }
+          ]
+          resources:{
+            requests:{
+              cpu: 1
+              memoryInGB: 2
+            }
+          }
+          ports: [
+            {
+              port: 80
+            }
+            {
+              port: 443
+            }
+          ]
+          volumeMounts:[
+            {
+              name: 'wordpress'
+              mountPath: '/var/www/html'
+            }
+          ]
         }
       }
+    ]
+    osType: 'Linux'
+    ipAddress:{
+      type: 'Public'
+      ports: [
+        {
+          protocol: 'TCP'
+          port: 80
+        }
+        {
+          protocol: 'TCP'
+          port: 443
+        }
+      ]
+      dnsNameLabel: siteName
     }
+    volumes:[
+      {
+        name: 'wordpress'
+        azureFile:{
+          shareName: 'wordpress'
+          storageAccountName: storageAccount.name
+          storageAccountKey: listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
+        }
+      }
+    ]
   }
-  
-  dependsOn:[
-    appServicePlan
-    storageAccount
-    stBlobervice_wordpress
-  ]
 }
 
 

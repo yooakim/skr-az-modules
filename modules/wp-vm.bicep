@@ -7,6 +7,7 @@ param sshPublicKey string = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC1qSW41ue5mp1
 param siteName string = resourceGroup().name
 param location string = resourceGroup().location
 
+param cloudInit string = ''
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2021-03-01' = {
   name: '${siteName}-nsg'
@@ -126,6 +127,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-07-01' = {
         }
         provisionVMAgent: true
       }
+      customData: base64(cloudInit)
     }
     networkProfile: {
       networkInterfaces: [
