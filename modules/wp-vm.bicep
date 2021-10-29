@@ -196,7 +196,7 @@ resource nsgRule_SSH 'Microsoft.Network/networkSecurityGroups/securityRules@2021
 
 resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-03-01' = {
   parent: virtualNetwork
-  name: 'default'
+  name: '${siteName}-snet'
   properties: {
     addressPrefix: '192.168.0.0/24'
     privateEndpointNetworkPolicies: 'Enabled'
